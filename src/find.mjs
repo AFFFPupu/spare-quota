@@ -36,6 +36,27 @@ export function openLinkedPrs(timeline) {
     .map((e) => e.source.issue.html_url);
 }
 
+// Work an agent cannot finish as one reviewable PR: open questions and research,
+// or tasks too big for one sitting. Matched on labels and titles.
+const NOT_A_FIX_LABEL = /\b(spike|research|investigat\w*|discussion|question|rfc|proposal|design|epic|tracking|meta|roadmap|needs[- ](design|decision|discussion|triage))\b/i;
+const NOT_A_FIX_TITLE = /^\s*(\[?(spike|research|rfc|proposal|discussion|question|epic|tracking|meta)\b|investigate\b|explore\b)|\b(spike|rfc)\b|\?\s*$/i;
+const LARGE_LABEL = /\b(size|effort|complexity|estimate)\W*(l|xl|xxl|large|high|hard|big|[5-9]|1\d)\b|\b(large|xl|hard)\b/i;
+const LARGE_TITLE = /\b(decompile|rewrite|port|migrate)\b.*\b(whole|entire|all|version|game)\b/i;
+const MAX_CHECKLIST = 5;
+
+export function scopeReason(issue) {
+  const labels = (issue.labels ?? []).map((l) => l.name);
+  const notFix = labels.find((name) => NOT_A_FIX_LABEL.test(name));
+  if (notFix) return `not a fix: labelled "${notFix}"`;
+  if (NOT_A_FIX_TITLE.test(issue.title ?? "")) return "not a fix: title reads as a spike, research or question";
+  const large = labels.find((name) => LARGE_LABEL.test(name));
+  if (large) return `too large: labelled "${large}"`;
+  if (LARGE_TITLE.test(issue.title ?? "")) return "too large: title describes a whole-project job";
+  const checklist = (issue.body ?? "").match(/^\s*[-*] \[[ xX]\]/gm)?.length ?? 0;
+  if (checklist > MAX_CHECKLIST) return `too large: ${checklist}-item checklist`;
+  return null;
+}
+
 // Decides one issue from facts already fetched. Returns null to offer it,
 // or a reason to skip it.
 export function skipReason({ issue, repo, ban, linkedPrs }) {
@@ -45,6 +66,8 @@ export function skipReason({ issue, repo, ban, linkedPrs }) {
   if (issue.labels?.some((l) => /good first issue/i.test(l.name))) {
     return "labelled good first issue (kept for human newcomers)";
   }
+  const scope = scopeReason(issue);
+  if (scope) return scope;
   if (linkedPrs.length) return `open PR already: ${linkedPrs[0]}`;
   if (ban) return `rules may forbid AI contributions: "${ban.quote}" (${ban.file})`;
   return null;
