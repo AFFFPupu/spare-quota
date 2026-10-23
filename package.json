@@ -1,0 +1,18 @@
+{
+  "name": "spare-quota",
+  "version": "0.0.1",
+  "description": "See how much of your Claude Code and Codex quota will go unused before it resets.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Ao Fu",
+  "bin": {
+    "spare-quota": "bin/spare-quota.mjs",
+    "spare-quota-statusline": "bin/statusline.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
