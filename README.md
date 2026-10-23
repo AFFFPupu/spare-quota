@@ -30,7 +30,18 @@ PR reviewed and opened by you.
 }
 ```
 
-`spare-quota --json` prints the raw snapshots. Tests: `npm test`.
+`spare-quota --json` prints the raw snapshots.
+
+## Finding issues
+
+`spare-quota find` searches GitHub for open issues labelled
+[`spare-quota-welcome`](LABEL.md), plus `agent-friendly`, `ai-friendly` and
+`ai-welcome` as a separate, weaker list. It skips archived repositories,
+assigned issues, good first issues, issues with an open PR, and projects whose
+`AI_POLICY.md` or `CONTRIBUTING` seems to refuse AI contributions, and says why
+for each. It uses `GITHUB_TOKEN` or `gh auth token`. Add `--json` for raw data.
+
+Tests: `npm test`.
 
 ## License
 
