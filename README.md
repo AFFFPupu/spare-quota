@@ -8,8 +8,9 @@ Claude 5h 24% (resets 15:51) · week 41% (resets Tue 00:41) | Codex week 3% (res
 ```
 
 Early work in progress. The plan is to offer leftover weekly quota to
-open-source issues you pick, in your own fork, with every PR reviewed and
-opened by you.
+open-source issues whose maintainers invited it with the
+[`spare-quota-welcome`](LABEL.md) label, working in your own fork, with every
+PR reviewed and opened by you.
 
 ## Where the numbers come from
 
